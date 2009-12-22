@@ -1,0 +1,13 @@
+\begin{figure}[hb]
+  \centering
+  \begin{tikzpicture}
+    \node [dot, label=below right:\node{1}] (1) at (0, 0) {};
+    \node [dot, label=above right:\node{2}] (2) at ($ (1)+(0,3) $) {};
+    \node [dot, label=above right:\node{3}] (3) at ($ (2)+(4,0) $) {};
+    \draw (1) -- (3) -- (2);
+
+    \draw[thick] ($ (1) - (0, .5) $) -- ($ (2) + (0, .5) $);
+  \end{tikzpicture}
+  \caption{Ферма из пяти стержневых элементов}
+  \label{fig:truss}
+\end{figure}

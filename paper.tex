@@ -31,6 +31,8 @@
 \newcommand{\mul}{\cdot}
 \newcommand{\figref}[1]{рис. \ref{#1}}
 
+\newcommand{\node}[1]{\begin{tikzpicture}\node[draw, circle, inner sep=1pt] (circle) {$#1$};\end{tikzpicture}}
+
 % Minus for matrices
 \newcommand{\mm}{\llap{$-$}}
 \newcommand{\phm}{\phantom{-}}
@@ -239,10 +241,17 @@ $f_1$ и $f_2$.
 
 \section{Задачи статики}
 
+Применим метод конечных элементов для статического анализа фермы,
+изображённой на \figref{fig:truss}. Она состоит из двух конечных
+элементов \element{1} и \element{2}.
+
+\input{truss.tkz.tex}
+
 \subsection{Уравнения равновесия}
 
 Матрица жёсткости $\matr{K}$ связывает векторы узловых смещений и
 нагрузок.
+
 
 \subsection{Преобразование координат}
 
