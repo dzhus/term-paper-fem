@@ -1,0 +1,26 @@
+\begin{figure}[hb]
+  \centering
+  \begin{tikzpicture}
+    \node [dot] (A) at (0, 0) {};
+    \node [dot] (B) at ($ (A) + (5, 0) $) {};
+    \coordinate (shift) at (0, 0.3);
+
+    \node [draw, circle] (Ae) at (A) {};
+    \node [draw, circle] (Be) at (B) {};
+    \draw (Ae.north) -- (Be.north);
+    \draw (Ae.south) -- (Be.south);
+
+    \draw [|<->|] ($ (A) + (shift) $) -- node[above] {$L$} ($ (B) + (shift) $);
+    \draw [|->] ($ (A) - (shift) $) -- node[below] {$u_1$} ++(1.5, 0);
+    \draw [|->] ($ (B) - (shift) $) -- node[below] {$u_2$} ++(0.5, 0);
+    \begin{scope}[>=latex]
+      \draw [->, thick] ($ (A) - (0.7, 0) $) node[above] {$f_1$} 
+      -- ($ (A) $); 
+      \draw [->, thick] ($ (B) $) -- ++(1, 0) 
+      node[above] {$f_2$} ;
+    \end{scope}
+
+  \end{tikzpicture}
+  \caption{Стержневой элемент}
+  \label{fig:bar}
+\end{figure}

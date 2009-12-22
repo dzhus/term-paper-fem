@@ -1,0 +1,11 @@
+\begin{figure}[hb]
+  \centering
+  \begin{tikzpicture}
+    \node [dot, label=above:$\phi_1$] (A) at (0, 0) {};
+    \node [dot, label=right:$\phi_2$] (B) at ($ (A)+(1,-1) $) {};
+    \node [dot, label=below:$\phi_3$] (C) at ($ (A)+(-.5,-1.2) $) {};
+    \draw (A) -- (B) -- (C) -- (A);
+  \end{tikzpicture}
+  \caption{Треугольный конечный элемент}
+  \label{fig:triangle}
+\end{figure}

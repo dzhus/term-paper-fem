@@ -1,0 +1,26 @@
+\begin{figure}[hb]
+  \centering
+  \begin{tikzpicture}
+    % triangles
+    \coordinate [] (a) at (0,0);
+    \coordinate [] (b) at ($ (a) + (1, 1) $);
+    \coordinate [] (c) at ($ (b) + (-1.5, 0.2) $);
+    \coordinate [] (d) at ($ (a) + (-1.2, 0.3) $);
+    \coordinate [label=below:$D$] (e) at ($ (a) + (-.5, -1) $);
+    \coordinate [] (f) at ($ (a) + (.7, -0.2) $);
+    \coordinate [] (g) at ($ (e) + (-1.5, 1.2) $);
+    \coordinate [] (h) at ($ (g) + (0.5, 1.5) $);
+    \draw (a) -- (b) -- (c) -- cycle;
+    \draw (a) -- (c) -- (d) -- cycle;
+    \draw (e) -- (a) -- (d) -- cycle;
+    \draw (a) -- (b) -- (f) -- cycle;
+    \draw (a) -- (e) -- (f) -- cycle;
+    \draw (e) -- (d) -- (g) -- cycle;
+    \draw (g) -- (d) -- (c) -- cycle;
+    \draw (g) -- (h) -- (c) -- cycle;
+
+    \draw[thick, smooth cycle] plot coordinates{(b) (c) (h) (g) (e) (f)};
+  \end{tikzpicture}
+  \caption{Двумерная задача}
+  \label{fig:2d-domain}
+\end{figure}
