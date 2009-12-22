@@ -31,11 +31,18 @@
 \newcommand{\mul}{\cdot}
 \newcommand{\figref}[1]{рис. \ref{#1}}
 
-\newcommand{\node}[1]{\begin{tikzpicture}\node[draw, circle, inner sep=1pt] (circle) {$#1$};\end{tikzpicture}}
+\newcommand{\node}[1]{\begin{tikzpicture}%
+    \node[draw, circle, inner sep=1pt] {$#1$};\end{tikzpicture}}
+\newcommand{\element}[1]{\begin{tikzpicture}%
+    \node[draw, rectangle, inner sep=1pt] {$#1$};\end{tikzpicture}}
 
 % Minus for matrices
 \newcommand{\mm}{\llap{$-$}}
 \newcommand{\phm}{\phantom{-}}
+
+% Subfigures
+\usepackage{subfigure}
+\renewcommand{\thesubfigure}{\asbuk{subfigure})~}
 
 % Bib in TOC
 \usepackage[numbib,nottoc]{tocbibind}
@@ -237,9 +244,50 @@ $f_1$ и $f_2$.
 приложенными к нему силами, называется \neword{матрицей жёсткости}
 данного элемента.
 
-\subsection{Метод Галёркина}
-
+\clearpage
 \section{Задачи статики}
+
+\subsection{Системы координат и обозначения}
+
+В дальнейшем будем выделять две системы координат —
+\neword{локальную}, оси которой ориентированы в соответствии с
+положением конечного элемента в пространстве, и \neword{глобальную},
+оси которой направлены одинаково для всех конечных элементов модели.
+На \figref{fig:element-cs} смещения узлов стержневого элемента в
+плоскости приведены в двух системах. Узловые смещения в глобальных
+координатах обозначаются большим буквами, в локальных — маленькими.
+
+\input{element-cs.tkz.tex}
+
+Ориентация стержня на плоскости характеризуется углом $\theta$ наклона
+элемента к глобальной оси $X$.
+
+Связь локальных и глобальных координат выражается матричным
+соотношением:
+\begin{equation}
+  \label{eq:glob-loc}
+  \begin{bmatrix}
+    u_1\\
+    v_1\\
+    u_2\\
+    v_2\\
+  \end{bmatrix}
+  =
+  \begin{bmatrix}
+    \cos\theta & \sin\theta & 0 & 0 \\
+    -\sin\theta & \cos\theta & 0 & 0 \\
+    0 & 0 & \cos\theta & \sin\theta \\
+    0 & 0 & -\sin\theta & \cos\theta
+  \end{bmatrix}
+  \begin{bmatrix}
+    U_1\\
+    U_2\\
+    U_3\\
+    U_4\\
+  \end{bmatrix}
+\end{equation}
+
+\subsection{Уравнения равновесия}
 
 Применим метод конечных элементов для статического анализа фермы,
 изображённой на \figref{fig:truss}. Она состоит из двух конечных
@@ -247,11 +295,8 @@ $f_1$ и $f_2$.
 
 \input{truss.tkz.tex}
 
-\subsection{Уравнения равновесия}
-
 Матрица жёсткости $\matr{K}$ связывает векторы узловых смещений и
 нагрузок.
-
 
 \subsection{Преобразование координат}
 
