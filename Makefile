@@ -5,6 +5,10 @@ NOWEAVE := noweave -n
 
 DOCNAME := paper
 
+include ${DOCNAME}-deps.mk
+
+.PHONY: doc
+
 doc: ${DOCNAME}.pdf
 
 ${DOCNAME}-deps.mk: ${DOCNAME}.tex
