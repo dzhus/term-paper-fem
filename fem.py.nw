@@ -1,0 +1,123 @@
+% -*- mode: noweb; noweb-code-mode: python-mode -*-
+
+Рассмотрение программы будет иметь следующую структуру
+<<*>>=
+<<класс для узла>>
+<<класс для стержня>>
+<<основные процедуры \fem{}>>
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()
+@
+
+Класс узла двумерной сетки обеспечивает хранение координат узла, его
+глобального индекса, а также определение расстояние для других узлов.
+
+<<класс для узла>>=
+class Node2D:
+    def __init__(self, x, y, idx=None):
+        """
+        `idx` is 1-based global node index.
+        """
+        self.x = x
+        self.y = y
+        self.idx = idx
+
+    def dist_to(self, node):
+        return math.sqrt((self.x - node.x) ** 2 + \
+                         (self.y - node.y) ** 2)
+@ 
+
+Двумерный стержень реализован в соответствии с материалом раздела
+\ref{sec:bar}. Обеспечивается вычисление матриц жёсткости и масс в
+глобальных координатах.
+
+<<класс для стержня>>=
+class Bar2D:
+    def __init__(self, node1, node2, area, elasticity, density=0):
+        self.node1 = node1
+        self.node2 = node2
+        self.length = node1.dist_to(node2)
+        self.cosine = (node2.x - node1.x) / self.length
+        self.sine = (node2.y - node1.y) / self.length
+
+        self.area = area
+        self.elasticity = elasticity
+        self.density = density
+        
+        self.stiffness = self._stiffness_matrix()
+        self.mass = self._mass_matrix()
+        self.connectivity = [2 * node1.idx - 1, 2 * node1.idx, \
+                             2 * node2.idx - 1, 2 * node2.idx]
+
+    def _make_rotation(self):
+        r = lil_matrix((4, 4))
+        r[0, 0] = r[2, 2] = self.cosine
+        r[0, 1] = r[2, 3] = self.sine
+        return r
+
+    <<матрица жёсткости>>
+    <<матрица масс>>
+@
+
+Определение матрицы жёсткости в глобальных координатах выполняется по
+формулам \eqref{eq:bar-stiffness} и \eqref{eq:bar-global-stiffness}.
+<<матрица жёсткости>>=
+    def _stiffness_matrix(self):
+        k = self.area * self.elasticity / self.length
+        m = lil_matrix((4, 4))
+        m[0, 0] = m[2, 2] = k
+        m[0, 2] = m[2, 0] = -k
+
+        r = self._make_rotation()
+
+        K = csr_matrix(r).T * csr_matrix(m) * csr_matrix(r)
+        return K
+@ 
+
+Матрица масс вычисляется согласно формуле \eqref{eq:bar-mass}.
+<<матрица масс>>=
+    def _mass_matrix(self):
+        m = self.density * self.area * self.length / 6
+        M = lil_matrix((4, 4))
+        M[0, 0] = M[1, 1] = M[2, 2] = M[3, 3] = m * 2
+        M[2, 0] = M[0, 2] = M[3, 1] = M[1, 3] = m
+        return M
+@
+
+После задания нужных классов для элементов и узлов, можно реализовать
+главные этапы \fem{}:
+
+<<основные процедуры \fem{}>>=
+<<генерация глобальных матриц>>
+<<решение системы>>
+@ 
+
+Процедура [[assemble]] осуществляет генерацию глобальных матриц
+$\matr{K}$ и $\matr{M}$ по списку элементов и узлов с учётом
+соотношения \eqref{eq:global-stiffness}.
+
+<<генерация глобальных матриц>>=
+def assemble(elements, nodes):
+    K = lil_matrix((nodes * 2, nodes * 2))
+    M = lil_matrix((nodes * 2, nodes * 2))
+
+    for e in elements:
+        L = e.connectivity
+        Ke = e.stiffness
+        Me = e.mass
+        for i in xrange(4):
+            for j in xrange(4):
+                K[L[i] - 1, L[j] - 1] += Ke[i, j]
+                M[L[i] - 1, L[j] - 1] += Me[i, j]
+    return K, M
+@ 
+
+Функция [[solve_fem]] по матрице жёсткости, количеству зафиксированных
+узлов и вектору внешних нагрузок определяет вектор неизвестных
+смещений $\matr{U_a}$ в соответствии с \eqref{eq:displacements}.
+
+<<решение системы>>=
+def solve_fem(stiffness, displacements, forces):
+    reduced = stiffness[2 * displacements:, 2 * displacements:]
+    return gmres(csr_matrix(reduced), forces)
